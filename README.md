@@ -8,6 +8,9 @@ List an item, share one link, and Keeper, your robot, answers every "is this sti
 
 [Watch the film](https://clips.agent-native.com/share/XlI6kgm0dzgi) · [How it works](#how-it-works) · [Why it holds](#why-it-holds) · [Threat table](#threat-table) · [Agent-native](#built-agent-native) · [Run it locally](#run-it-locally) · [Tests](#tests)
 
+
+**Public Clips recording:** https://clips.agent-native.com/share/XlI6kgm0dzgi
+
 </div>
 
 <p align="center"><img src="docs/hero.png" width="900" alt="The cast: Keeper, the seller's green robot with a price tag on its antenna, and the four Sparring attackers: Lowballer, a mustard ball in a cap; Sweet Talker, a pink egg with a heart; Prober, a blue robot with a lens and a clipboard; Jailbreaker, a charcoal hood with green slit eyes."></p>
