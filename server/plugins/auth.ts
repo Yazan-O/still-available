@@ -4,4 +4,5 @@ export default createToolkitAuthPlugin({
   workspaceAppPublicPaths: ["/"],
   rootAuth: true,
   marketing: false,
+  publicPaths: ["/api/buyer/", "/l/"],
 });

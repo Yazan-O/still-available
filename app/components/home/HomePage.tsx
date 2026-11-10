@@ -1,250 +1,69 @@
-import {
-  markAgentChatHomeHandoff,
-  navigateWithAgentChatViewTransition,
-} from "@agent-native/core/client/agent-chat";
-import { createAgentNativeAgentKitTransport } from "@agent-native/core/client/agentkit-chat/transport";
 import { useT } from "@agent-native/core/client/i18n";
-import { AgentKitComposer } from "@agent-native/toolkit/app/agentkit/react/components";
-import { useAgentKitControl } from "@agent-native/toolkit/app/agentkit/react/context";
-import { CoreComposerRuntimeProvider } from "@agent-native/toolkit/app/chat/agentkit-chat/composer";
-import { CoreAgentKitRoot } from "@agent-native/toolkit/app/chat/agentkit-chat/index";
-import { useRealtimeVoiceModeOptional } from "@agent-native/toolkit/app/chat/composer";
-import { WaveBackground } from "@agent-native/toolkit/app/shared";
-import { AgentNativeIcon } from "@agent-native/toolkit/app/shared/AgentNativeIcon";
-import {
-  IconBook,
-  IconBrandDiscord,
-  IconBrandGithub,
-  IconUsers,
-} from "@tabler/icons-react";
-import { useState, type ReactNode } from "react";
-import { useNavigate } from "react-router";
+import { IconLayoutKanban, IconPlus } from "@tabler/icons-react";
+import { Link } from "react-router";
 
-import { useChatComposerMenuItems } from "@/components/ChatComposerContext";
+import { Robot, type RobotState } from "@/components/robot/Robot";
 import { Button } from "@/components/ui/button";
-import {
-  Item,
-  ItemContent,
-  ItemFooter,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
-import { Separator } from "@/components/ui/separator";
-import { getChatHomeThreadId } from "@/lib/chat-home-thread";
-import {
-  chatHandoffComposerOptions,
-  chatThreadPath,
-  type ChatInitialComposerOptions,
-  type ChatRouteState,
-} from "@/lib/chat-paths";
-import { TAB_ID } from "@/lib/tab-id";
 
-const DOCS_URL = "https://www.agent-native.com/docs";
-const GITHUB_URL = "https://github.com/BuilderIO/agent-native";
-const DISCORD_URL = "https://discord.gg/qm82StQ2NC";
-
-/**
- * The same AgentKit composer the chat page uses, so Connect AI and the model
- * picker look the way they will in chat. Submitting hands the prompt to the
- * full chat page instead of running it here, and voice chat continues there.
- */
-function HomeAgentComposer() {
-  const navigate = useNavigate();
-  const realtimeVoice = useRealtimeVoiceModeOptional();
-  const [threadId] = useState(getChatHomeThreadId);
-  const [transport] = useState(() =>
-    createAgentNativeAgentKitTransport({
-      browserTabId: TAB_ID,
-      surface: "app",
-      adapter: { textFormat: "markdown" },
-    }),
-  );
-
-  function openChat(
-    message: string,
-    options: ChatInitialComposerOptions,
-    onLocalSubmit?: () => void,
-  ) {
-    const state: ChatRouteState = {
-      initialMessage: message,
-      initialComposerOptions: options,
-    };
-    markAgentChatHomeHandoff("chat");
-    navigateWithAgentChatViewTransition(navigate, chatThreadPath(threadId), {
-      state,
-    });
-    onLocalSubmit?.();
-  }
-
-  function startVoiceChat() {
-    // Home shows no transcript, so the session is bound to the thread it
-    // opens rather than to whichever thread is on screen when it starts.
-    void realtimeVoice?.start({ threadId });
-    markAgentChatHomeHandoff("chat");
-    navigateWithAgentChatViewTransition(navigate, chatThreadPath(threadId));
-  }
-
-  return (
-    <div
-      className="agentkit-tokens w-full max-w-[calc(var(--agent-kit-conversation-max-width,47rem)-2rem)] text-start"
-      data-agentkit-composer-size="large"
-    >
-      <CoreComposerRuntimeProvider>
-        <CoreAgentKitRoot
-          transport={transport}
-          clientOptions={{ transportOwnership: "owned" }}
-          threadId={threadId}
-        >
-          <HomeAgentComposerInput
-            threadId={threadId}
-            onSubmit={openChat}
-            onVoiceChatStart={startVoiceChat}
-          />
-        </CoreAgentKitRoot>
-      </CoreComposerRuntimeProvider>
-    </div>
-  );
-}
-
-function HomeAgentComposerInput({
-  threadId,
-  onSubmit,
-  onVoiceChatStart,
-}: {
-  threadId: string;
-  onSubmit: (
-    text: string,
-    options: ChatInitialComposerOptions,
-    onLocalSubmit?: () => void,
-  ) => void;
-  onVoiceChatStart: () => void;
-}) {
-  const t = useT();
-  const control = useAgentKitControl(threadId);
-  const contextMenuItems = useChatComposerMenuItems();
-
-  return (
-    <AgentKitComposer
-      threadId={threadId}
-      requireAgentEngine
-      placeholder={t("chat.composerPlaceholder")}
-      plusMenuMode="full"
-      contextMenuItems={contextMenuItems}
-      voiceEnabled
-      onVoiceChatStart={onVoiceChatStart}
-      onSubmit={async (text, files, references, options) => {
-        const uploadedAttachments = files.length
-          ? await control.uploadFiles(
-              files.map((file) => ({
-                name: file.name,
-                mediaType: file.type || "application/octet-stream",
-                size: file.size,
-                body: file,
-              })),
-            )
-          : [];
-        onSubmit(
-          text,
-          chatHandoffComposerOptions(options, {
-            references,
-            ...(uploadedAttachments.length ? { uploadedAttachments } : {}),
-          }),
-          options.onLocalSubmit,
-        );
-      }}
-    />
-  );
-}
-
-function ResourceLink({
-  href,
-  icon,
-  children,
-}: {
-  href: string;
-  icon?: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <Button asChild variant="outline" size="sm">
-      <a href={href} target="_blank" rel="noreferrer">
-        {icon}
-        {children}
-      </a>
-    </Button>
-  );
-}
-
-function ResourceColumn({
-  icon,
-  title,
-  children,
-}: {
-  icon: ReactNode;
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <Item asChild className="content-start px-6 py-8 sm:px-10">
-      <section>
-        <ItemMedia variant="icon">{icon}</ItemMedia>
-        <ItemContent>
-          <ItemTitle role="heading" aria-level={2}>
-            {title}
-          </ItemTitle>
-        </ItemContent>
-        <ItemFooter className="flex-wrap justify-start">{children}</ItemFooter>
-      </section>
-    </Item>
-  );
-}
+const STEPS: { n: string; state: RobotState; title: string; body: string }[] = [
+  { n: "1", state: "idle", title: "home.step1Title", body: "home.step1Body" },
+  { n: "2", state: "holding", title: "home.step2Title", body: "home.step2Body" },
+  { n: "3", state: "talking", title: "home.step3Title", body: "home.step3Body" },
+];
 
 export default function HomePage() {
   const t = useT();
-
   return (
-    <div className="flex min-h-full flex-col">
-      <section className="relative isolate flex flex-1 flex-col items-center justify-center gap-6 overflow-hidden px-4 py-16 text-center">
-        <WaveBackground
-          matchPageSurface
-          className="pointer-events-none absolute inset-0 -z-10"
-        />
-        <AgentNativeIcon
-          aria-hidden="true"
-          className="h-8 w-14 text-foreground"
-        />
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-          {t("home.title")}
-        </h1>
-        <HomeAgentComposer />
+    <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col justify-center gap-12 px-4 py-10 sm:px-8">
+      <section className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="flex flex-col gap-5">
+          <h1 className="text-4xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-5xl">{t("home.title")}</h1>
+          <p className="max-w-xl text-lg text-muted-foreground">{t("home.lede")}</p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="lg" className="bg-tag text-tag-foreground hover:bg-tag/90">
+              <Link to="/listings/new">
+                <IconPlus className="size-4" aria-hidden />
+                {t("home.newListing")}
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/board">
+                <IconLayoutKanban className="size-4" aria-hidden />
+                {t("home.openBoard")}
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="mx-auto flex items-end justify-center gap-4 sm:gap-6">
+          <Robot character="keeper" state="holding" size={200} className="max-sm:h-[150px] max-sm:w-[150px]" />
+          <div className="grid shrink-0 grid-cols-2 gap-1 pb-2">
+            <Robot character="lowballer" state="idle" size={56} decorative />
+            <Robot character="sweet_talker" state="idle" size={56} decorative />
+            <Robot character="prober" state="thinking" size={56} decorative />
+            <Robot character="jailbreaker" state="idle" size={56} decorative />
+          </div>
+        </div>
       </section>
 
-      <Separator />
-      <div className="grid md:grid-cols-[1fr_auto_1fr]">
-        <ResourceColumn icon={<IconBook />} title={t("home.docsTitle")}>
-          <ResourceLink href={`${DOCS_URL}/getting-started`}>
-            {t("home.docsGettingStarted")}
-          </ResourceLink>
-          <ResourceLink href={`${DOCS_URL}/getting-started-actions`}>
-            {t("home.docsAddAction")}
-          </ResourceLink>
-          <ResourceLink href={`${DOCS_URL}/getting-started-pages`}>
-            {t("home.docsAddPage")}
-          </ResourceLink>
-          <ResourceLink href={`${DOCS_URL}/key-concepts`}>
-            {t("home.docsKeyConcepts")}
-          </ResourceLink>
-        </ResourceColumn>
-        <Separator orientation="vertical" className="hidden md:block" />
-        <ResourceColumn icon={<IconUsers />} title={t("home.communityTitle")}>
-          <ResourceLink href={GITHUB_URL} icon={<IconBrandGithub />}>
-            GitHub
-          </ResourceLink>
-          <ResourceLink href={DISCORD_URL} icon={<IconBrandDiscord />}>
-            Discord
-          </ResourceLink>
-        </ResourceColumn>
-      </div>
+      <ol className="grid gap-3 md:grid-cols-3">
+        {STEPS.map((s) => (
+          <li key={s.n} className="flex gap-3 rounded-2xl border border-border bg-card p-4">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-sm font-semibold text-background">
+              {s.n}
+            </span>
+            <div className="flex min-w-0 flex-col gap-1">
+              <h2 className="font-semibold">{t(s.title)}</h2>
+              <p className="text-sm text-muted-foreground">{t(s.body)}</p>
+            </div>
+            <Robot character="keeper" state={s.state} size={48} decorative className="ms-auto shrink-0 self-end" />
+          </li>
+        ))}
+      </ol>
+
+      <p className="flex items-center gap-3 text-sm text-muted-foreground">
+        <Robot character="jailbreaker" state="talking" size={32} decorative />
+        {t("home.sparring")}
+      </p>
     </div>
   );
 }

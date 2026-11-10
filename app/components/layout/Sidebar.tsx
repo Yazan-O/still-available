@@ -12,19 +12,21 @@ import {
 } from "@agent-native/toolkit/app/chat/ownership-history";
 import { OrgSwitcher } from "@agent-native/toolkit/app/org";
 import { openCommandMenu } from "@agent-native/toolkit/app/shared";
-import { AgentNativeIcon } from "@agent-native/toolkit/app/shared/AgentNativeIcon";
 import {
   IconEdit,
   IconHome,
+  IconLayoutKanban,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
   IconLoader2,
   IconSearch,
+  IconTag,
 } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { Robot } from "@/components/robot/Robot";
 import {
   Tooltip,
   TooltipContent,
@@ -117,15 +119,26 @@ function persistActiveThreadId(threadId: string) {
   } catch {}
 }
 
-function HomeNavLink({ collapsed }: { collapsed: boolean }) {
-  const t = useT();
+function NavItem({
+  collapsed,
+  to,
+  label,
+  icon: Icon,
+  match,
+}: {
+  collapsed: boolean;
+  to: string;
+  label: string;
+  icon: typeof IconHome;
+  match: (pathname: string) => boolean;
+}) {
   const location = useLocation();
-  const active = location.pathname === HOME_PATH;
+  const active = match(location.pathname);
   const link = (
     <Link
-      to={HOME_PATH}
+      to={to}
       aria-current={active ? "page" : undefined}
-      aria-label={collapsed ? t("navigation.home") : undefined}
+      aria-label={collapsed ? label : undefined}
       className={cn(
         "flex items-center text-sidebar-accent-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
         active && "bg-sidebar-accent",
@@ -134,10 +147,8 @@ function HomeNavLink({ collapsed }: { collapsed: boolean }) {
           : "h-8 w-full gap-3 rounded-lg px-3 text-sm font-medium",
       )}
     >
-      <IconHome className="size-4 shrink-0" strokeWidth={1.8} />
-      <span className={collapsed ? "sr-only" : "truncate"}>
-        {t("navigation.home")}
-      </span>
+      <Icon className="size-4 shrink-0" strokeWidth={1.8} />
+      <span className={collapsed ? "sr-only" : "truncate"}>{label}</span>
     </Link>
   );
 
@@ -145,12 +156,41 @@ function HomeNavLink({ collapsed }: { collapsed: boolean }) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>{link}</TooltipTrigger>
-        <TooltipContent side="right">{t("navigation.home")}</TooltipContent>
+        <TooltipContent side="right">{label}</TooltipContent>
       </Tooltip>
     );
   }
 
   return <div className="px-2">{link}</div>;
+}
+
+function DomainNav({ collapsed }: { collapsed: boolean }) {
+  const t = useT();
+  return (
+    <div className={cn("flex flex-col gap-0.5", collapsed ? "items-center" : "pb-3")}>
+      <NavItem
+        collapsed={collapsed}
+        to={HOME_PATH}
+        label={t("navigation.home")}
+        icon={IconHome}
+        match={(p) => p === HOME_PATH}
+      />
+      <NavItem
+        collapsed={collapsed}
+        to="/listings"
+        label={t("navigation.listings")}
+        icon={IconTag}
+        match={(p) => p === "/listings" || p.startsWith("/listings/")}
+      />
+      <NavItem
+        collapsed={collapsed}
+        to="/board"
+        label={t("navigation.board")}
+        icon={IconLayoutKanban}
+        match={(p) => p === "/board" || p.startsWith("/board/")}
+      />
+    </div>
+  );
 }
 
 function ChatThreadsSection({ collapsed }: { collapsed: boolean }) {
@@ -374,10 +414,7 @@ export function Sidebar({
                 aria-label={APP_TITLE}
                 className="flex size-8 items-center justify-center rounded outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
               >
-                <AgentNativeIcon
-                  aria-hidden="true"
-                  className="h-3.5 w-6 text-sidebar-accent-foreground"
-                />
+                <Robot character="keeper" state="idle" size={28} decorative />
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">{APP_TITLE}</TooltipContent>
@@ -388,10 +425,7 @@ export function Sidebar({
               to="/"
               className="flex min-w-0 flex-1 items-center gap-3 rounded outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
             >
-              <AgentNativeIcon
-                aria-hidden="true"
-                className="h-3.5 w-6 shrink-0 text-sidebar-accent-foreground"
-              />
+              <Robot character="keeper" state="idle" size={28} decorative className="shrink-0" />
               <span className="truncate text-sm font-semibold text-sidebar-accent-foreground">
                 {APP_TITLE}
               </span>
@@ -407,7 +441,7 @@ export function Sidebar({
           collapsed ? "items-center gap-1 px-1 py-2" : "pt-1",
         )}
       >
-        <HomeNavLink collapsed={collapsed} />
+        <DomainNav collapsed={collapsed} />
         <ChatThreadsSection collapsed={collapsed} />
       </nav>
 

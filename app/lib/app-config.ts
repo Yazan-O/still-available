@@ -1,5 +1,5 @@
 const rawAppName = "still-available";
-const rawAppTitle = "Still Available";
+const rawAppTitle = "Still Available?";
 
 const APP_NAME_PLACEHOLDER = "{" + "{APP_NAME}}";
 const APP_TITLE_PLACEHOLDER = "{" + "{APP_TITLE}}";

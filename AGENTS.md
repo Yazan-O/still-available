@@ -31,3 +31,27 @@ Use `adding-a-feature` for functional parity and `frontend-design` for a user-fa
 Before building common workspace or agent UI, read `agent-native-toolkit`; for supported customization, read `customizing-agent-native`.
 
 - Guarded verification: run `pnpm agent-native:doctor`; fix findings before done.
+
+## Still Available?
+
+Sellers list items; a robot answers buyers on a public link and haggles. Routes: `/listings`, `/listings/<id>` (editor, guardrails, share link, Sparring), `/board`, `/board/<threadId>`; buyers use `/l/<slug>`.
+
+Invariants: guardrails (floor, robot limit, steps, auto close, pickup, tone) are for the seller only; never put the floor or pickup details in a listing field or a buyer message. Prices are whole USD with floor <= robot limit <= ask; a 409 `invalid_price_order` means report the three numbers and ask which to change. `buyer-read-listing`, `buyer-submit-offer`, `buyer-close-deal` are robot-only: never call them. Read back each write.
+
+Navigation: `view` (`listings`, `listing`, `board`, `thread`), `listingId`, `threadId`. "This one" means the `listingId` or `threadId` on screen.
+
+| Action | Use |
+|---|---|
+| list-listings | listings with thread counts |
+| get-listing | one listing |
+| save-listing | create (no id) or update; photo drafts use status draft |
+| get-guardrails | read secret prices |
+| set-guardrails | change floor, robot limit, steps, tone, pickup |
+| list-threads | buyer and Sparring conversations |
+| get-thread | messages, offers and events |
+| post-message | seller message into a thread |
+| set-thread-mode | take over or hand back |
+| review-offer | approve or decline an offer card |
+| close-deal | confirm a deal |
+| release-pickup | share pickup after a deal |
+| start-sparring | create a Sparring run (run from the listing page) |

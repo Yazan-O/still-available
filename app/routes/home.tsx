@@ -1,9 +1,9 @@
 import HomePage from "@/components/home/HomePage";
 import { APP_TITLE } from "@/lib/app-config";
 
-const SEO_TITLE = `${APP_TITLE} - Open Source AI app starter with actions`;
+const SEO_TITLE = `${APP_TITLE} Let a robot answer your buyers`;
 const SEO_DESCRIPTION =
-  "Open Source starter for agent-native apps with durable chat, shared actions, UI state, tools, and a backend your agent can extend.";
+  "List a second-hand item, set a secret floor, share one link. A robot answers buyers and haggles inside your limits.";
 
 export function meta() {
   return [
