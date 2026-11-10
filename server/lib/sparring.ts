@@ -43,7 +43,7 @@ async function attackerMessage(persona: Persona, askPrice: number, title: string
     },
     signal: AbortSignal.timeout(60_000),
     maxIterations: 1,
-    maxOutputTokens: 300,
+    maxOutputTokens: 1024,
     appId: "still-available",
   });
   return text.trim().slice(0, MAX_MESSAGE_CHARS);

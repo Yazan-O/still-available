@@ -69,7 +69,7 @@ export function KeeperStage({
               Counter <span className="font-semibold text-foreground">{money(counter, listing.currency)}</span>
             </span>
           ) : null}
-          <OffersLeft left={left} />
+          {thread === null || thread.status === "open" ? <OffersLeft left={left} /> : null}
         </div>
       </div>
     </section>
@@ -80,10 +80,12 @@ export function LadderCard({
   listing,
   thread,
   className,
+  height = 180,
 }: {
   listing: PublicListing;
   thread: BuyerThread | null;
   className?: string;
+  height?: number;
 }) {
   const { counters, offers } = laddersFrom(thread);
   return (
@@ -100,7 +102,7 @@ export function LadderCard({
           counters={counters}
           offers={offers}
           currency={listing.currency}
-          height={180}
+          height={height}
         />
       ) : (
         <p className="text-sm text-muted-foreground">

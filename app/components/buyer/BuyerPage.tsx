@@ -150,7 +150,7 @@ export function BuyerPage({
             />
           </div>
           {thread && thread.offers.length ? (
-            <LadderCard listing={listing} thread={thread} className="lg:hidden" />
+            <LadderCard listing={listing} thread={thread} height={120} className="gap-2 p-3 lg:hidden" />
           ) : null}
           <div
             ref={scroller}
