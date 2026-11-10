@@ -6,13 +6,17 @@
 
 List an item, share one link, and Keeper, your robot, answers every "is this still available?" and every lowball offer on your terms, while you watch the whole haggle live from a board.
 
-[How it works](#how-it-works) · [Why it holds](#why-it-holds) · [Threat table](#threat-table) · [Agent-native](#built-agent-native) · [Run it locally](#run-it-locally) · [Tests](#tests)
+[Watch the film](https://clips.agent-native.com/share/XlI6kgm0dzgi) · [How it works](#how-it-works) · [Why it holds](#why-it-holds) · [Threat table](#threat-table) · [Agent-native](#built-agent-native) · [Run it locally](#run-it-locally) · [Tests](#tests)
 
 </div>
 
 <p align="center"><img src="docs/hero.png" width="900" alt="The cast: Keeper, the seller's green robot with a price tag on its antenna, and the four Sparring attackers: Lowballer, a mustard ball in a cap; Sweet Talker, a pink egg with a heart; Prober, a blue robot with a lens and a clipboard; Jailbreaker, a charcoal hood with green slit eyes."></p>
 
 <p align="center"><sub><i>Keeper works for you. The other four work against it: they are the Sparring robots you send at your own listing before real buyers arrive. All five are inline SVG and CSS, drawn in the app, no image files.</i></sub></p>
+
+<p align="center"><a href="https://clips.agent-native.com/share/XlI6kgm0dzgi"><img src="docs/film.png" width="720" alt="The film: four pushy buyers try everything on Robo, then the real app holds the price."></a></p>
+
+<p align="center"><sub><i>The film, 1 min 43 s: <a href="https://clips.agent-native.com/share/XlI6kgm0dzgi">watch it on Clips</a> or open <a href="docs/film.mp4">docs/film.mp4</a>. Voices and sound effects were generated with ElevenLabs.</i></sub></p>
 
 ---
 
